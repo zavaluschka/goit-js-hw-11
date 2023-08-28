@@ -12,7 +12,7 @@ let namePhoto = ' ';
 const perPage = 40;
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
-loadMoreBtn.style.display = "none"
+
 
 async function searchPhoto(namePhoto, page = 1, perPage = 40) {
   const response = await axios(
