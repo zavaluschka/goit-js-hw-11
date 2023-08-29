@@ -4,7 +4,7 @@ const restAPI = '&image_type=photo&orientation=horizontal&safesearch=true';
 let page = 1;
 let namePhoto = ' ';
 const perPage = 40;
-
+namePhoto = e.target.elements.searchQuery.value.trim();
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
 
