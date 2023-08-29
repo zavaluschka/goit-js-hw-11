@@ -1,25 +1,10 @@
 
 import './style.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import {searchPhoto } from './api';
 
-const KEY = '39088067-91f94ac6bb1312b7445b3cdf9';
-const restAPI = '&image_type=photo&orientation=horizontal&safesearch=true';
-let page = 1;
-let namePhoto = ' ';
-const perPage = 40;
-
-axios.defaults.baseURL = 'https://pixabay.com/api/';
-
-
-async function searchPhoto(namePhoto, page = 1, perPage = 40) {
-  const response = await axios(
-    `?key=${KEY}&q=${namePhoto}${restAPI}&page=${page}&per_page=${perPage}`
-  );
-  return response;
-}
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -36,31 +21,37 @@ loadMoreBtn.addEventListener('click', onLoadMore);
 
 
 async function onSubmitPhoto(e) {
-  e.preventDefault();
-  galleryPhoto.innerHTML = '';
-  loadMoreBtn.style.display = 'inline';
+    e.preventDefault();
+    galleryPhoto.innerHTML = '';
+    loadMoreBtn.style.display = 'inline';
 
-  namePhoto = e.target.elements.searchQuery.value.trim();
-  if (!namePhoto) {
-    return Notify.failure(
-        'Sorry, the search field cannot be empty. Please enter information to search.'
+    namePhoto = e.target.elements.searchQuery.value.trim();
+    try {
+        if (!namePhoto) {
+            return Notify.failure(
+                'Sorry, the search field cannot be empty. Please enter information to search.'
         
-    );
-  }
-  const { data } = await searchPhoto(namePhoto); 
+            );
+        }
+        const { data } = await searchPhoto(namePhoto);
 
-  cardPhoto(data); 
-  messageInfo(data); 
-  stopSearch(data); 
-  e.target.reset(); 
+        cardPhoto(data);
+        messageInfo(data);
+        stopSearch(data);
+        e.target.reset();
+    }
+catch(err){console.error('Error:', err);}
 }
 async function onLoadMore() {
-  page += 1;
+    page += 1;
   
-  const { data } = await searchPhoto(namePhoto, page, perPage);
-  cardPhoto(data);
-  stopSearch(data);
-  smoothScroll();
+    try {
+        const { data } = await searchPhoto(namePhoto, page, perPage);
+        cardPhoto(data);
+        stopSearch(data);
+        smoothScroll();
+    }
+    catch(err){console.error('Error:', err);}
 }
 
 function cardPhoto(arr) {
@@ -89,23 +80,30 @@ function cardPhoto(arr) {
 }
 
 function messageInfo(arr) {
-  if (arr.hits.length === 0) {
-    Notify.warning(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  }
-  if (arr.totalHits !== 0) {
-    Notify.success(`Hooray! We found ${arr.totalHits} images.`);
-  }
+    try {
+        if (arr.hits.length === 0) {
+            Notify.warning(
+                'Sorry, there are no images matching your search query. Please try again.'
+            );
+        }
+        if (arr.totalHits !== 0) {
+            Notify.success(`Hooray! We found ${arr.totalHits} images.`);
+        }
+    }
+    catch(err){console.error('Error:', err);}
 }
 function stopSearch(arr) {
-  if (arr.hits.length < 40 && arr.hits.length > 0) {
-    loadMoreBtn.style.display = 'none';
-    Notify.info("We're sorry, but you've reached the end of search results.");
-  }
-  if (arr.hits.length === 40) {
-    loadMoreBtn.style.display = 'block';
-  }
+    try {
+        if (arr.hits.length < 40 && arr.hits.length > 0) {
+            loadMoreBtn.style.display = 'none';
+            Notify.info("We're sorry, but you've reached the end of search results.");
+        }
+        if (arr.hits.length === 40) {
+            loadMoreBtn.style.display = 'block';
+        }
+    }
+    catch(err){console.error('Error:', err);}
+    
 }
 
 function smoothScroll() {
