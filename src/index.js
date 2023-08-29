@@ -24,8 +24,9 @@ async function onSubmitPhoto(e) {
     e.preventDefault();
     galleryPhoto.innerHTML = '';
     loadMoreBtn.style.display = 'inline';
+    const namePhoto = e.target.elements.searchQuery.value.trim();
 
-    namePhoto = e.target.elements.searchQuery.value.trim();
+    
     try {
         if (!namePhoto) {
             return Notify.failure(
